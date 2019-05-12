@@ -5,11 +5,11 @@ IDLE = 0
 
 def formatDirection(direction):
     if(direction == UP):
-        return 'UP'
+        return '↑'
     elif(direction == DOWN):
-        return 'DOWN'
+        return '↓'
     else:
-        return 'IDLE'
+        return '-'
 
 
 class Elevator():
@@ -36,7 +36,7 @@ class Elevator():
         if self.direction == IDLE:
             firstStop = self.destinations[0]
             self.direction = UP if firstStop > self.floor else DOWN
-            print(f'Elevator is going {formatDirection(self.direction)}')
+            print(f'Elevator {formatDirection(self.direction)}')
 
     def move(self):
         if not self.destinations:
@@ -72,3 +72,15 @@ class Elevator():
             floorPenalty = (0.05 * self.maxWeight * distance)
             util -= floorPenalty
         return util
+
+    def getDirection(self):
+        return formatDirection(self.direction)
+
+    def getState(self):
+        seperator = ' '
+        usersInEl = len(list(filter(lambda u: u.state == 1 , self.users)))
+        state = f'C: {usersInEl}'
+        state = state + seperator + f'W: {self.weight}/{self.maxWeight}'
+        return state
+
+        
