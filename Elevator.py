@@ -2,6 +2,7 @@ UP = 1
 DOWN = -1
 IDLE = 0
 
+import math
 
 def formatDirection(direction):
     if(direction == UP):
@@ -33,22 +34,30 @@ class Elevator():
         self.users.append(user)
         self.destinations.append(user.floor)
         self.destinations.append(user.destinationFloor)
-        if self.direction == IDLE:
-            firstStop = self.destinations[0]
-            self.direction = UP if firstStop > self.floor else DOWN
-            print(f'Elevator {formatDirection(self.direction)}')
 
-    def move(self):
-        if not self.destinations:
-            self.direction = IDLE
-        nextFloor = self.floor + self.direction
-        self.floor = nextFloor
-        if nextFloor in self.destinations:
-            self.direction = IDLE
+    def addWeight(self, user):
+        weight = user.weight
+        self.weight = self.weight + weight
+
+    def removeWeight(self, user):
+        weight = user.weight
+        self.weight = self.weight - weight
+        self.users.remove(user)
+
+    def removeFromPath(self, user):
+        uIndex = self.users.index(user)
+        print(uIndex)
+        if(self.destinations[uIndex * 2] ==  user.destinationFloor):
+            self.destinations.pop(uIndex * 2)
+        elif(self.destinations[uIndex * 2] ==  user.floor):
+            self.destinations.pop(uIndex * 2)
+            self.destinations.pop(uIndex * 2)
+        self.users.pop(uIndex)
 
     def calcUtil(self, user):
-        if (self.weight + user.weight > self.maxWeight):
-            return None
+        weight = sum([u.weight for u in self.users]) if self.users else self.weight
+        if (weight + user.weight > self.maxWeight):
+            return -math.inf
         util = 0
         origin = user.floor
         destination = user.destinationFloor
@@ -81,6 +90,18 @@ class Elevator():
         usersInEl = len(list(filter(lambda u: u.state == 1 , self.users)))
         state = f'C: {usersInEl}'
         state = state + seperator + f'W: {self.weight}/{self.maxWeight}'
+        state = state + seperator + f'Dest: {self.destinations}'
         return state
 
-        
+    def move(self):
+        if not self.destinations:
+            self.direction = IDLE
+        else:
+            nextStop = self.destinations[0]
+            if self.direction == IDLE:
+                self.direction = UP if nextStop > self.floor else DOWN
+            nextFloor = self.floor + self.direction
+            self.floor = nextFloor
+            if nextFloor == self.destinations[0]:
+                self.direction = IDLE
+                self.destinations.pop(0)

@@ -6,6 +6,7 @@ class Environment():
 
     def addUser(self, user):
         self.users.append(user)
+        print(f'U{len(self.users)}| {user.getState()}')
     
     def getUserById(self, i):
         return self.users[i - 1]
@@ -19,6 +20,7 @@ class Environment():
             updatedElevators = self.elevators[:]
             updatedElevators.remove(elevator)
             elevator.updateElevators(updatedElevators, self.floors)
+        print(f'E{len(self.elevators)}| {elevator.getState()}')
 
     def bestFitElevator(self, user):
         utils = []
@@ -26,19 +28,26 @@ class Environment():
             utils.append(elevator.calcUtil(user))
         print(f'Utils: {utils}')
         maxUtil = max(utils)
-        return utils.index(maxUtil)
+        i = utils.index(maxUtil)
+        return self.elevators[i]
 
     def requestElevator(self, user, destinationFloor):
         user.requestElevator(destinationFloor)
-        bestFit = self.bestFitElevator(user)
-        bestElevator = self.elevators[bestFit]
-        print(f'== Elevator {bestFit + 1} ==')
-        bestElevator.addStop(user)
-        return bestElevator
+        elevator = self.bestFitElevator(user)
+        elevator.addStop(user)
+        user.setElevator(elevator)
+        return elevator
+
+    def takeStairs(self, user):
+        elevator = user.elevator
+        user.takeStairs()
+        elevator.removeFromPath(user)
+        return user
     
     def printState(self):
         seperator = '\t'
         elStateList = []
+        uStateList = []
         elTableRow = seperator
         for e in self.elevators:
             eIndex = self.elevators.index(e) + 1
@@ -46,6 +55,11 @@ class Environment():
             elTableRow = elTableRow + f'{eIndexStr}{seperator}'
             elState = f'{eIndexStr}| {e.getState()}'
             elStateList.append(elState)
+        for u in self.users:
+            uIndex = self.users.index(u) + 1
+            uIndexStr = f'U{uIndex}'
+            uState = f'{uIndexStr}| {u.getState()}'
+            uStateList.append(uState)
         print(elTableRow)
         for i in reversed(range(self.floors)):
             toPrint = f'F{i}:{seperator}'
@@ -55,3 +69,10 @@ class Environment():
             toPrint = toPrint + utilPrint
             print(toPrint)
         print('\n'.join(elStateList))
+        print('\n'.join(uStateList))
+    
+    def run(self):
+        for elevator in self.elevators:
+            elevator.move()
+        for user in self.users:
+            user.move()

@@ -19,24 +19,47 @@ class User():
         self.floor = floor
         self.state = MIA
         self.destinationFloor = None
+        self.elevator = None
 
     def requestElevator(self, destinationFloor):
         self.destinationFloor = destinationFloor
         self.state = WAITING
 
+    def setElevator(self, elevator):
+        self.elevator = elevator
+
     def enterElevator(self):
         self.state = IN
+        elevator = self.elevator
+        elevator.addWeight(self)
 
     def takeStairs(self):
+        self.elevator = None
+        self.destinationFloor = None
         self.state = MIA
 
     def exitElevator(self):
         self.state = OUT
         self.destinationFloor = None
+        elevator = self.elevator
+        elevator.removeWeight(self)
+        self.elevator = None
     
     def getState(self):
         seperator = ' '
         state = f'W: {self.weight}'
         state = state + seperator + f'S: {formatState(self.state)}'
-        state = state + seperator + f'F: {self.floor}'
+        state = state + seperator + f'CurrF: {self.floor}'
+        state = state + seperator + f'DestF: {self.destinationFloor}'
         return state
+
+    def move(self):
+        if self.elevator:
+            elevator = self.elevator
+            if self.state == IN:
+                self.floor = elevator.floor
+                if self.floor == self.destinationFloor:
+                    self.exitElevator()
+            elif self.floor == elevator.floor:
+                self.enterElevator()
+            
