@@ -148,5 +148,8 @@ class Elevator():
                 self.direction = IDLE
                 self.destinations.pop(0)
     
+    def getTurns(self):
+        return self.turns
+
     def metrics(self):
-        return[self.turns, self.turnsWithNoLight, self.turnsSavedByMaxWeight, self.turnsSavedByPath, self.turnsSavedByUsers]
+        return[self.turnsWithNoLight, self.turnsSavedByMaxWeight, self.turnsSavedByPath, self.turnsSavedByUsers]

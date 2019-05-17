@@ -83,21 +83,14 @@ class Environment():
             self.run()
 
     def exit(self):
-        turns = 0
-        turnsWithNoLight = 0
-        turnsSavedByMaxWeight = 0
-        turnsSavedByPath = 0
-        turnsSavedByUsers = 0
-        for elevator in self.elevators:
-            [t, tL, tW, tP, tU] = elevator.metrics()
-            turns = turns + t
-            turnsWithNoLight = turnsWithNoLight + tL
-            turnsSavedByMaxWeight = turnsSavedByMaxWeight + tW
-            turnsSavedByPath = turnsSavedByPath + tP
-            turnsSavedByUsers = turnsSavedByUsers + tU
+        turns = self.elevators[0].getTurns()
+        print(f'== Metrics ==')
         print(f'Turns: {turns}')
-        print(f'Turns Saved')
-        print(f'With no light: {turnsWithNoLight}')
-        print(f'By max weight: {turnsSavedByMaxWeight}')
-        print(f'By path: {turnsSavedByPath}')
-        print(f'By users: {turnsSavedByUsers}')
+        for elevator in self.elevators:
+            [tL, tW, tP, tU] = elevator.metrics()
+            eIndex = self.elevators.index(elevator)
+            print(f'E{eIndex}')
+            print(f'With no light: {tL}')
+            print(f'By max weight: {tW}')
+            print(f'By path: {tP}')
+            print(f'By users: {tU}')
