@@ -1,6 +1,7 @@
 class Environment():
     def __init__(self, floors):
         self.floors = floors + 1
+        self.turns = 0
         self.elevators = []
         self.users = []
 
@@ -40,15 +41,16 @@ class Environment():
 
     def takeStairs(self, user):
         elevator = user.elevator
-        user.takeStairs()
         elevator.removeFromPath(user)
+        user.takeStairs()
         return user
     
     def printState(self):
         seperator = '\t'
         elStateList = []
         uStateList = []
-        elTableRow = seperator
+        elTableRow = seperator + seperator
+        print(f'== TURN {self.turns} ==')
         for e in self.elevators:
             eIndex = self.elevators.index(e) + 1
             eIndexStr = f'E{eIndex}'
@@ -62,7 +64,8 @@ class Environment():
             uStateList.append(uState)
         print(elTableRow)
         for i in reversed(range(self.floors)):
-            toPrint = f'F{i}:{seperator}'
+            toPrintSeperator = seperator + seperator if i < 10 else seperator
+            toPrint = f'F{i}:{toPrintSeperator}'
             elevators_on_floor = list(filter(lambda x: x.floor == i, self.elevators))
             utilPrint = [f'[{e.getDirection()}]' if e in elevators_on_floor else '[ ]' for e in self.elevators]
             utilPrint = seperator.join(utilPrint)
@@ -72,6 +75,7 @@ class Environment():
         print('\n'.join(uStateList))
     
     def run(self):
+        self.turns = self.turns + 1
         for elevator in self.elevators:
             elevator.move()
         for user in self.users:
@@ -83,9 +87,8 @@ class Environment():
             self.run()
 
     def exit(self):
-        turns = self.elevators[0].getTurns()
-        print(f'== Metrics ==')
-        print(f'Turns: {turns}')
+        print(f'== METRICS ==')
+        print(f'Turns: {self.turns}')
         for elevator in self.elevators:
             [tL, tW, tP, tU] = elevator.metrics()
             eIndex = self.elevators.index(elevator)

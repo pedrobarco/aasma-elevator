@@ -32,7 +32,6 @@ class Elevator():
         self.destinations = []
         self.destinationHistory = []
         self.inRepositioning = False
-        self.turns = 0
         self.turnsSavedByMaxWeight = 0
         self.turnsSavedByPath = 0
         self.turnsSavedByUsers = 0
@@ -48,7 +47,8 @@ class Elevator():
 
     def addStop(self, user):
         if self.inRepositioning == ON:
-            self.destinations.pop(0)
+            if self.destinations:
+               self.destinations.pop(0)
             self.inRepositioning = OFF
             self.turnsSavedByUsers = self.turnsSavedByUsers + abs(self.destinationHistory[-1] - self.floor)
         self.users.append(user)
@@ -126,7 +126,6 @@ class Elevator():
         return state
 
     def move(self):
-        self.turns = self.turns + 1
         if self.lights == OFF:
             self.turnsWithNoLight = self.turnsWithNoLight + 1
         if not self.destinations:
@@ -136,6 +135,8 @@ class Elevator():
                     self.inRepositioning = ON
                     self.destinations.append(roundedAverageFloor)
                     self.move()
+                else:
+                    self.direction = IDLE
             else:
                 self.direction = IDLE
         else:
@@ -148,8 +149,5 @@ class Elevator():
                 self.direction = IDLE
                 self.destinations.pop(0)
     
-    def getTurns(self):
-        return self.turns
-
     def metrics(self):
         return[self.turnsWithNoLight, self.turnsSavedByMaxWeight, self.turnsSavedByPath, self.turnsSavedByUsers]
