@@ -76,3 +76,28 @@ class Environment():
             elevator.move()
         for user in self.users:
             user.move()
+        self.printState()
+
+    def autoRun(self):
+        while any([len(e.destinations) for e in self.elevators]):
+            self.run()
+
+    def exit(self):
+        turns = 0
+        turnsWithNoLight = 0
+        turnsSavedByMaxWeight = 0
+        turnsSavedByPath = 0
+        turnsSavedByUsers = 0
+        for elevator in self.elevators:
+            [t, tL, tW, tP, tU] = elevator.metrics()
+            turns = turns + t
+            turnsWithNoLight = turnsWithNoLight + tL
+            turnsSavedByMaxWeight = turnsSavedByMaxWeight + tW
+            turnsSavedByPath = turnsSavedByPath + tP
+            turnsSavedByUsers = turnsSavedByUsers + tU
+        print(f'Turns: {turns}')
+        print(f'Turns Saved')
+        print(f'With no light: {turnsWithNoLight}')
+        print(f'By max weight: {turnsSavedByMaxWeight}')
+        print(f'By path: {turnsSavedByPath}')
+        print(f'By users: {turnsSavedByUsers}')

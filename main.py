@@ -12,9 +12,14 @@ def execute(env, args):
         env.printState()
         global MOVING
         MOVING = True
+    if (command == 'auto'):
+        global AUTO
+        AUTO = True
+        MOVING = False
     if (command == 'skip'):
         pass
     elif (command == 'exit'):
+        env.exit()
         exit(0)
     elif (command == 'elevator'):
         maxWeight = int(args[1])
@@ -40,14 +45,18 @@ def main():
     args = sys.stdin.readline().strip().split(' ')
     env = Environment(int(args[0]))
     global MOVING
+    global AUTO
     MOVING = False
+    AUTO = False
     running = True
     while (running):
         args = sys.stdin.readline().strip().split(' ')
-        execute(env, args)
+        execute(env, args) 
         if (MOVING):
             env.run()
-            env.printState()
+        elif (AUTO):
+            env.autoRun()
+            MOVING = True
 
 if __name__ == "__main__":
     main()
