@@ -3,6 +3,13 @@ OUT = -1
 WAITING = 0
 MIA = -2
 
+UP = 1
+DOWN = -1
+IDLE = 0
+
+ON = 1
+OFF = 0
+
 def formatState(state):
     if (state == 1):
         return 'IN'
@@ -17,6 +24,7 @@ class User():
     def __init__(self, weight, floor=0):
         self.weight = weight
         self.floor = floor
+        self.originalFloor = floor
         self.state = MIA
         self.destinationFloor = None
         self.elevator = None
@@ -60,6 +68,6 @@ class User():
                 self.floor = elevator.floor
                 if self.floor == self.destinationFloor:
                     self.exitElevator()
-            elif self.floor == elevator.floor:
+            elif self.floor == elevator.floor and elevator.direction == IDLE:
                 self.enterElevator()
             

@@ -1,3 +1,8 @@
+IN = 1
+OUT = -1
+WAITING = 0
+MIA = -2
+
 UP = 1
 DOWN = -1
 IDLE = 0
@@ -6,6 +11,7 @@ ON = 1
 OFF = 0
 
 import math
+import bisect
 
 def formatDirection(direction):
     if(direction == UP):
@@ -20,6 +26,16 @@ def formatLights(lights):
         return 'ON'
     elif(lights == OFF):
         return 'OFF'
+
+def partition(pred, iterable):
+    trues = []
+    falses = []
+    for item in iterable:
+        if pred(item):
+            trues.append(item)
+        else:
+            falses.append(item)
+    return trues, falses
 
 class Elevator():
     def __init__(self, maxWeight, floor=0):
@@ -44,6 +60,18 @@ class Elevator():
     def updateElevators(self, elevators, maxFloors):
         self.maxFloors = maxFloors
         self.elevators = elevators
+    
+    def updateDestinations(self):
+        unsortedDestinations = []
+        for user in self.users:
+            if user.floor == user.originalFloor:
+                unsortedDestinations.append(user.originalFloor)
+            unsortedDestinations.append(user.destinationFloor)
+        inPath, notInPath = partition(lambda d: d > self.floor if self.direction == UP else d <= self.floor, unsortedDestinations)
+        inPath = sorted(list(dict.fromkeys(inPath)))
+        notInPath = sorted(list(dict.fromkeys(notInPath)))
+        destinations = inPath + notInPath
+        return destinations
 
     def addStop(self, user):
         if self.inRepositioning == ON:
@@ -53,9 +81,10 @@ class Elevator():
             self.turnsSavedByUsers = self.turnsSavedByUsers + abs(self.destinationHistory[-1] - self.floor)
         self.users.append(user)
         self.destinations.append(user.floor)
-        self.destinationHistory.append(user.floor)
         self.destinations.append(user.destinationFloor)
+        self.destinationHistory.append(user.floor)
         self.destinationHistory.append(user.destinationFloor)
+        self.destinations = self.updateDestinations()
     
     def updateLights(self):
         self.lights = ON if self.weight > 0 else OFF
@@ -72,15 +101,12 @@ class Elevator():
         self.updateLights()
 
     def removeFromPath(self, user):
-        uIndex = self.users.index(user)
-        if(self.destinations[uIndex * 2] ==  user.destinationFloor):
-            self.destinations.pop(uIndex * 2)
-        elif(self.destinations[uIndex * 2] ==  user.floor):
-            self.destinations.pop(uIndex * 2)
-            self.destinations.pop(uIndex * 2)
-        self.turnsSavedByPath = self.turnsSavedByPath + abs(self.floor - user.floor)
-        self.turnsSavedByPath = self.turnsSavedByPath + abs(user.floor - user.destinationFloor)
-        self.users.pop(uIndex)
+        nearestToUserFloor = bisect.bisect_left(self.destinations, user.floor)
+        nearestToUserDestination = bisect.bisect_left(self.destinations, user.destinationFloor)
+        self.turnsSavedByPath = self.turnsSavedByPath + abs(nearestToUserFloor - user.floor)
+        self.turnsSavedByPath = self.turnsSavedByPath + abs(nearestToUserDestination - user.destinationFloor)
+        self.users.remove(user)
+        self.destinations = self.updateDestinations()
 
     def calcUtil(self, user):
         weight = sum([u.weight for u in self.users]) if self.users else self.weight
