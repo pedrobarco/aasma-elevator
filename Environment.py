@@ -64,7 +64,7 @@ class Environment():
             uStateList.append(uState)
         print(elTableRow)
         for i in reversed(range(self.floors)):
-            toPrintSeperator = seperator + seperator if i < 10 else seperator
+            toPrintSeperator = seperator * 2
             toPrint = f'F{i}:{toPrintSeperator}'
             elevators_on_floor = list(filter(lambda x: x.floor == i, self.elevators))
             utilPrint = [f'[{e.getDirection()}]' if e in elevators_on_floor else '[ ]' for e in self.elevators]
