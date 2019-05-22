@@ -39,24 +39,24 @@ init
 
 - NFLOORS
     - NFLOORS: building's number of floors **(first instruction/line)**
-- elevator maxWeight [floor] 
+- **elevator** maxWeight [floor] 
    - maxWeight: elevator weight limit
    - floor: floor where elevator is created (defaults to 0)
-- user weight [floor]
+- **user** weight [floor]
    - weight: user's weight 
    - floor: floor where user is created (defaults to 0)
-- request userId floor
+- **request** userId floor
    - userId: user requesting a lift 
    - floor: user's destination floor
-- stairs userId
+- **stairs** userId
    - userId: user taking the stairs
-- init
+- **init**
     - initates turn-based environment moves
-- skip 
+- **skip**
     - skips a turn (same as no action)
-- auto
+- **auto**
     - skips turns until all elevator have no destinations
-- exit
+- **exit**
     - exits program, presenting collected metrics
 
 ## Metrics
@@ -69,4 +69,4 @@ Our project implements metrics that calculate how many turns has an elevator sav
 
 ## Samples
 
-Samples are in the [samples/](https://github.com/pedrobarco/aasma-elevator/samples) directory. The samples present different scenarios where metrics and turns saved vary accordingly.
+Samples are in the [samples/](https://github.com/pedrobarco/aasma-elevator/tree/master/samples) directory. The samples present different scenarios where metrics and turns saved vary accordingly.
