@@ -1,0 +1,8 @@
+10
+elevator 100 5
+elevator 250 5
+user 70 1
+request 1 5
+init
+auto
+exit
